@@ -196,8 +196,6 @@ class RPLidar(object):
         self.logger.debug('Trying to read response: %d bytes', dsize)
         data = self._serial_port.read(dsize)
         self.logger.debug('Recieved data: %s', data)
-        if len(data) != dsize:
-            raise RPLidarException('Wrong body size')
         return data
 
     def get_info(self):
@@ -257,7 +255,7 @@ class RPLidar(object):
 
     def clear_input(self):
         '''Clears input buffer by reading all available data'''
-        self._serial_port.read_all()
+        self._serial_port.flushInput()
 
     def stop(self):
         '''Stops scanning process, disables laser diode and the measurment
@@ -272,7 +270,8 @@ class RPLidar(object):
         just been powered up.'''
         self.logger.info('Reseting the sensor')
         self._send_cmd(RESET_BYTE)
-        time.sleep(.002)
+        time.sleep(2)
+        self.clear_input()
 
     def iter_measurments(self, max_buf_meas=500):
         '''Iterate over measurments. Note that consumer must be fast enough,
@@ -330,7 +329,7 @@ class RPLidar(object):
                         'Too many measurments in the input buffer: %d/%d. '
                         'Clearing buffer...',
                         data_in_buf//dsize, max_buf_meas)
-                    self._serial_port.read(data_in_buf//dsize*dsize)
+                    self.clear_input()
             yield _process_scan(raw)
 
     def iter_scans(self, max_buf_meas=500, min_len=5):
