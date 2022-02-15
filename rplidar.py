@@ -187,14 +187,17 @@ class RPLidar(object):
 
     def _send_payload_cmd(self, cmd, payload):
         '''Sends `cmd` command with `payload` to the sensor'''
-        size = struct.pack('B', len(payload))
-        req = SYNC_BYTE + cmd + size + payload
-        checksum = 0
-        for v in struct.unpack('B'*len(req), req):
-            checksum ^= v
-        req += struct.pack('B', checksum)
-        self._serial.write(req)
-        self.logger.debug('Command sent: %s' % _showhex(req))
+        try:
+            size = struct.pack('B', len(payload))
+            req = SYNC_BYTE + cmd + size + payload
+            checksum = 0
+            for v in struct.unpack('B'*len(req), req):
+                checksum ^= v
+            req += struct.pack('B', checksum)
+            self._serial.write(req)
+            self.logger.debug('Command sent: %s' % _showhex(req))
+        except Exception as e:
+            raise RPLidarException('Did device disconnect?')
 
     def _send_cmd(self, cmd):
         '''Sends `cmd` command to the sensor'''
