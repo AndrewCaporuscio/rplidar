@@ -197,7 +197,7 @@ class RPLidar(object):
             self._serial.write(req)
             self.logger.debug('Command sent: %s' % _showhex(req))
         except Exception as e:
-            raise RPLidarException('Did device disconnect?')
+            raise RPLidarException('Did device disconnect?') from None
 
     def _send_cmd(self, cmd):
         '''Sends `cmd` command to the sensor'''
