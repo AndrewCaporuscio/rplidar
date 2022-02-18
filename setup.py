@@ -7,7 +7,7 @@ except ImportError:
 setup(
     name = 'rplidar-mrumel',
     py_modules = ['rplidar'],
-    version = '1.1.1',
+    version = '1.1.2',
     description = 'Simple and lightweight module for working with RPLidar laser scanners',
     author='Merrick Rumel',
     author_email='merrick.rumel@fisherco.com',
